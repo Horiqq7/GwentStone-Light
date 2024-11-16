@@ -2,21 +2,13 @@ package game;
 
 import fileio.CardInput;
 import fileio.DecksInput;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
-
 import cards.Card;
 
-public class Decks {
-    private int nrCardsInDeck;
-    private int nrDecks;
-    private ArrayList<ArrayList<Card>> decks;
-    public Decks(DecksInput decksInput) {
-        this.nrCardsInDeck = decksInput.getNrCardsInDeck();
-        this.nrDecks = decksInput.getNrDecks();
-        this.decks = new ArrayList<ArrayList<Card>>();
+public final class Decks {
+    private final ArrayList<ArrayList<Card>> decks;
+    public Decks(final DecksInput decksInput) {
+        this.decks = new ArrayList<>();
         for (ArrayList<CardInput> deckInput : decksInput.getDecks()) {
             ArrayList<Card> deck = new ArrayList<>();
             for (CardInput cardInput : deckInput) {
@@ -27,31 +19,7 @@ public class Decks {
         }
     }
 
-    public ArrayList<Card> deckIndex (int index){
+    public ArrayList<Card> deckIndex(final int index) {
         return this.decks.get(index);
-    }
-
-    public int getNrCardsInDeck() {
-        return nrCardsInDeck;
-    }
-
-    public void setNrCardsInDeck(int nrCardsInDeck) {
-        this.nrCardsInDeck = nrCardsInDeck;
-    }
-
-    public int getNrDecks() {
-        return nrDecks;
-    }
-
-    public void setNrDecks(int nrDecks) {
-        this.nrDecks = nrDecks;
-    }
-
-    public ArrayList<ArrayList<Card>> getDecks() {
-        return decks;
-    }
-
-    public void setDecks(ArrayList<ArrayList<Card>> decks) {
-        this.decks = decks;
     }
 }

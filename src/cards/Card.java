@@ -1,20 +1,20 @@
 package cards;
 
 import fileio.CardInput;
-
+import java.util.ArrayList;
 import java.util.List;
 
 public class Card {
-    protected int mana;
-    protected int attackDamage;
+    private int mana;
+    private int attackDamage;
     protected int health;
-    protected String description;
-    protected String name;
-    protected boolean frozen;
+    private String description;
+    private final String name;
+    private boolean frozen;
     protected boolean hasAttacked;
-    protected List<String> colors;
+    private final List<String> colors;
 
-    public Card(CardInput cardInput) {
+    public Card(final CardInput cardInput) {
         this.mana = cardInput.getMana();
         this.attackDamage = cardInput.getAttackDamage();
         this.health = cardInput.getHealth();
@@ -24,16 +24,27 @@ public class Card {
         this.frozen = false;
     }
 
-    public void attackCard(Card attacker, Card target) {
+    public Card(final Card other) {
+        this.mana = other.mana;
+        this.attackDamage = other.attackDamage;
+        this.health = other.health;
+        this.description = other.description;
+        this.colors = new ArrayList<>(other.colors);
+        this.name = other.name;
+        this.frozen = other.frozen;
+        this.hasAttacked = other.hasAttacked;
+    }
+
+    public void attackCard(final Card attacker, final Card target) {
             target.takeDamage(attacker.getAttackDamage());
             attacker.hasAttacked = true;
     }
 
-    public void useDiscipleAbility(Card ally){
+    public void useDiscipleAbility(final Card ally) {
         ally.setHealth(ally.getHealth() + 2);
     }
 
-    public void useTheCursedOneAbility(Card target) {
+    public void useTheCursedOneAbility(final Card target) {
             int tempAttack = target.getAttackDamage();
             if (tempAttack == 0) {
                 target.setHealth(0);
@@ -43,34 +54,30 @@ public class Card {
             }
     }
 
-    public void useMirajAbility(Card target) {
-
+    public void useMirajAbility(final Card target) {
         int tempHealth = this.health;
         this.health = target.getHealth();
         target.setHealth(tempHealth);
     }
 
-    public void useTheRipperAbility(Card target) {
+    public void useTheRipperAbility(final Card target) {
         int reducedAttack = target.getAttackDamage() - 2;
         target.setAttackDamage(Math.max(reducedAttack, 0));
     }
 
     public boolean isTankCard() {
-        if(this.name.equals("Goliath")) {
-            return true;
-        } else if(this.name.equals("Warden")) {
-            return true;
-        }
-        return false;
+        return this.name.equals("Goliath") || this.name.equals("Warden");
     }
 
-    public void takeDamage(int damage) {
+    public void takeDamage(final int damage) {
         health -= damage;
     }
 
-    public int getMana() { return mana; }
+    public int getMana() {
+        return mana;
+    }
 
-    public void setMana(int mana) {
+    public void setMana(final int mana) {
         this.mana = mana;
     }
 
@@ -78,11 +85,11 @@ public class Card {
         return attackDamage;
     }
 
-    public void setAttackDamage(int attackDamage) {
+    public void setAttackDamage(final int attackDamage) {
         this.attackDamage = attackDamage;
     }
 
-    public void setHealth(int health) {
+    public void setHealth(final int health) {
         this.health = health;
     }
 
@@ -94,7 +101,7 @@ public class Card {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -102,46 +109,23 @@ public class Card {
         return colors;
     }
 
-    public void setColors(List<String> colors) {
-        this.colors = colors;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public boolean isFrozen() {
         return frozen;
     }
 
-    public void setFrozen(boolean frozen) {
+    public void setFrozen(final boolean frozen) {
         this.frozen = frozen;
     }
 
-    public boolean isAlive() {
-        return health > 0;
-    }
-
-    public void setHasAttacked(boolean hasAttacked) {
+    public void setHasAttacked(final boolean hasAttacked) {
         this.hasAttacked = hasAttacked;
     }
 
     public boolean getHasAttacked() {
         return hasAttacked;
-    }
-
-    public void useHeroSpecialAbility(List<Minion> targetRow) {
-    }
-
-    public boolean isHasAttacked() {
-        return hasAttacked;
-    }
-
-    public void useMinionAbility(Card card) {
-
     }
 }
