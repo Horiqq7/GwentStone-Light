@@ -9,6 +9,11 @@ import fileio.CardInput;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Clasa Card reprezinta o carte care poate fi folosita intr-un joc de carti.
+ * Aceasta clasa este extinsa de catre alte clase care definesc comportamente
+ * si abilitatile speciale ale cartilor.
+ */
 public class Card {
     private int mana;
     private int attackDamage;
@@ -35,7 +40,7 @@ public class Card {
     }
 
     /**
-     * Constructor de copiere pentru crearea unei noi carți ca o copie a alteia.
+     * Constructor de copiere pentru crearea unei noi carti ca o copie a alteia.
      *
      * @param other cartea care se copiaza
      */
@@ -61,18 +66,38 @@ public class Card {
         attacker.hasAttacked = true;
     }
 
+    /**
+     * Foloseste abilitatea Disciple care creste viata unei carti aliate cu 2.
+     *
+     * @param ally cartea care va beneficia de abilitatea Disciple
+     */
     public void useDiscipleAbility(final Card ally) {
         new Disciple().use(this, ally);
     }
 
+    /**
+     * Foloseste abilitatea The Cursed One care schimba atacul si viata unei carti tinta.
+     *
+     * @param target cartea care va fi afectata de abilitatea The Cursed One
+     */
     public void useTheCursedOneAbility(final Card target) {
         new TheCursedOne().use(this, target);
     }
 
+    /**
+     * Foloseste abilitatea Miraj care schimba viata dintre atacator si tinta.
+     *
+     * @param target cartea tinta ale carei valori ale vietii vor fi schimbate cu atacatorul
+     */
     public void useMirajAbility(final Card target) {
         new Miraj().use(this, target);
     }
 
+    /**
+     * Foloseste abilitatea The Ripper care reduce atacul unei carti tinta cu 2.
+     *
+     * @param target cartea tinta ale carei atacuri vor fi reduse
+     */
     public void useTheRipperAbility(final Card target) {
         new TheRipper().use(this, target);
     }
@@ -85,7 +110,6 @@ public class Card {
     public boolean isTankCard() {
         return this.name.equals("Goliath") || this.name.equals("Warden");
     }
-
     /**
      * Aplica daune carții, reducandu-i viata.
      *
@@ -94,8 +118,9 @@ public class Card {
     public void takeDamage(final int damage) {
         health -= damage;
     }
+
     /**
-     * Obține valoarea manei pentru această carte.
+     * Obtine valoarea manei pentru aceasta carte.
      *
      * @return mana valorii curente ale carții
      */
@@ -104,7 +129,7 @@ public class Card {
     }
 
     /**
-     * Setează valoarea manei pentru această carte.
+     * Seteaza valoarea manei pentru aceasta carte.
      *
      * @param mana valoarea de mana pentru a fi setata
      */
@@ -113,16 +138,16 @@ public class Card {
     }
 
     /**
-     * Obține valoarea daunei de atac pentru această carte.
+     * Obtine valoarea daunei de atac pentru aceasta carte.
      *
-     * @return atacul curent al carții
+     * @return atacul curent al cartii
      */
     public int getAttackDamage() {
         return attackDamage;
     }
 
     /**
-     * Setează valoarea daunei de atac pentru această carte.
+     * Seteaza valoarea daunei de atac pentru aceasta carte.
      *
      * @param attackDamage valoarea de atac care trebuie setata
      */
@@ -131,7 +156,7 @@ public class Card {
     }
 
     /**
-     * Setează valoarea vieții pentru această carte.
+     * Seteaza valoarea vietii pentru aceasta carte.
      *
      * @param health valoarea de viata pentru a fi setata
      */
@@ -140,25 +165,25 @@ public class Card {
     }
 
     /**
-     * Obține valoarea vieții pentru această carte.
+     * Obtine valoarea vietii pentru aceasta carte.
      *
-     * @return valoarea curentă a vieții
+     * @return valoarea curenta a vietii
      */
     public int getHealth() {
         return health;
     }
 
     /**
-     * Obține descrierea acestei cărți.
+     * Obtine descrierea acestei carti.
      *
-     * @return descrierea curentă a carții
+     * @return descrierea curenta a cartii
      */
     public String getDescription() {
         return description;
     }
 
     /**
-     * Setează descrierea pentru această carte.
+     * Seteaza descrierea pentru aceasta carte.
      *
      * @param description descrierea care trebuie setata
      */
@@ -167,54 +192,54 @@ public class Card {
     }
 
     /**
-     * Obține lista de culori asociate acestei cărți.
+     * Obtine lista de culori asociate acestei carti.
      *
-     * @return lista culorilor carții
+     * @return lista culorilor cartii
      */
     public List<String> getColors() {
         return colors;
     }
 
     /**
-     * Obține numele acestei cărți.
+     * Obtine numele acestei carti.
      *
-     * @return numele carții
+     * @return numele cartii
      */
     public String getName() {
         return name;
     }
 
     /**
-     * Verifică dacă această carte este înghețată.
+     * Verifica daca aceasta carte este inghetata.
      *
-     * @return true dacă este înghețată, false în caz contrar
+     * @return true daca este inghetata, false in caz contrar
      */
     public boolean isFrozen() {
         return frozen;
     }
 
     /**
-     * Setează starea de îngheț a acestei cărți.
+     * Seteaza starea de inghet a acestei carti.
      *
-     * @param frozen true pentru înghețat, false pentru nu înghețat
+     * @param frozen true pentru inghetat, false pentru cand nu e inghetat
      */
     public void setFrozen(final boolean frozen) {
         this.frozen = frozen;
     }
 
     /**
-     * Setează starea de atac al acestei cărți.
+     * Seteaza starea de atac al acestei carti.
      *
-     * @param hasAttacked true dacă a atacat, false în caz contrar
+     * @param hasAttacked true daca a atacat, false in caz contrar
      */
     public void setHasAttacked(final boolean hasAttacked) {
         this.hasAttacked = hasAttacked;
     }
 
     /**
-     * Obține starea de atac al acestei cărți.
+     * Obtine starea de atac al acestei carti.
      *
-     * @return true dacă a atacat, false în caz contrar
+     * @return true daca a atacat, false in caz contrar
      */
     public boolean getHasAttacked() {
         return hasAttacked;

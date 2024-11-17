@@ -5,11 +5,11 @@ import cards.Hero;
 import java.util.ArrayList;
 
 public final class Player {
-    private final ArrayList<Card> deck; // Deck-ul jucatorului
-    private final ArrayList<Card> hand; // Cartile in mana
-    private int mana; // Mana disponibila
-    private final Hero hero; // Eroul jucatorului
-    private int numberOfTanks; // Numarul de carti Tank pe teren
+    private final ArrayList<Card> deck;
+    private final ArrayList<Card> hand;
+    private int mana;
+    private final Hero hero;
+    private int numberOfTanks;
 
     public Player(final ArrayList<Card> playerDeck, final Hero hero) {
         this.hero = hero;

@@ -5,7 +5,7 @@ import cards.Hero;
 import fileio.CardInput;
 import game.GameBoard;
 
-public class KingMudface extends Hero {
+public final class KingMudface extends Hero {
 
     public KingMudface(final CardInput cardInput) {
         super(cardInput);

@@ -145,25 +145,48 @@ public final class Main {
                 switch (action.getCommand()) {
                     case "getPlayerDeck":
                         int deckIndex = action.getPlayerIdx();
-                        ArrayList<Card> deck = (deckIndex == 1) ? playerOne.getDeck() : playerTwo.getDeck();
-                        GameCommands.getPlayerDeck(mapper, action.getCommand(), deckIndex, deck, output);
+                        ArrayList<Card> deck;
+                        if (deckIndex == 1) {
+                            deck = playerOne.getDeck();
+                        } else {
+                            deck = playerTwo.getDeck();
+                        }
+                        GameCommands.getPlayerDeck(mapper,
+                                action.getCommand(), deckIndex, deck, output);
                         break;
 
                     case "getPlayerHero":
                         int heroIndex = action.getPlayerIdx();
-                        Hero hero = (heroIndex == 1) ? playerOne.getHero() : playerTwo.getHero();
-                        GameCommands.getPlayerHero(mapper, action.getCommand(), heroIndex, hero, output);
+                        Hero hero;
+                        if (heroIndex == 1) {
+                            hero = playerOne.getHero();
+                        } else {
+                            hero = playerTwo.getHero();
+                        }
+                        GameCommands.getPlayerHero(mapper,
+                                action.getCommand(), heroIndex, hero, output);
                         break;
 
                     case "getPlayerTurn":
-                        GameCommands.getPlayerTurn(mapper, action.getCommand(), currentPlayer, playerOne, output);
+                        GameCommands.getPlayerTurn(mapper,
+                                action.getCommand(), currentPlayer, playerOne, output);
                         break;
 
                     case "endPlayerTurn":
-                        int playerIndex = (currentPlayer == playerOne) ? 1 : 2;
-                        round = GameCommands.endPlayerTurn(currentPlayer.getHero(), gameBoard, playerIndex, turns, round);
+                        int playerIndex;
+                        if (currentPlayer == playerOne) {
+                            playerIndex = 1;
+                        } else {
+                            playerIndex = 2;
+                        }
+                        round = GameCommands.endPlayerTurn(currentPlayer.getHero(),
+                                gameBoard, playerIndex, turns, round);
                         turns++;
-                        currentPlayer = (currentPlayer == playerOne) ? playerTwo : playerOne;
+                        if (currentPlayer == playerOne) {
+                            currentPlayer = playerTwo;
+                        } else {
+                            currentPlayer = playerOne;
+                        }
                         if (turns % 2 == 0) {
                             GameCommands.endRound(playerOne, playerTwo, round);
                         }

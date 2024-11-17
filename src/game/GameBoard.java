@@ -4,11 +4,8 @@ import cards.Card;
 import java.util.ArrayList;
 
 public final class GameBoard {
-    // Constante pentru numarul de randuri si numarul maxim de carti pe un rand
     private static final int NUMBER_OF_ROWS = 4;
     private static final int MAX_CARDS_PER_ROW = 5;
-
-    // Tabla de joc, organizata pe randuri (fiecare rand contine o lista de carti)
     private final ArrayList<ArrayList<Card>> board;
     private boolean gameEnded;
 

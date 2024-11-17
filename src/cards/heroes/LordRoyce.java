@@ -5,7 +5,7 @@ import cards.Hero;
 import fileio.CardInput;
 import game.GameBoard;
 
-public class LordRoyce extends Hero {
+public final class LordRoyce extends Hero {
 
     public LordRoyce(final CardInput cardInput) {
         super(cardInput);

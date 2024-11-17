@@ -9,8 +9,10 @@ import cards.Hero;
 import java.util.ArrayList;
 
 import static game.CommandHelper.*;
-
-public final class GameCommands {
+/**
+ * Clasa GameCommands contine metode statice care gestioneaza comenzile din joc.
+ */
+public abstract class GameCommands {
     static final int FIRST_ROW = 0;
     static final int SECOND_ROW = 1;
     static final int THIRD_ROW = 2;
@@ -19,7 +21,15 @@ public final class GameCommands {
     private static int playerOneWins = 0;
     private static int playerTwoWins = 0;
 
-
+    /**
+     * Returneaza pachetul unui jucator.
+     *
+     * @param mapper    Obiectul ObjectMapper pentru gestionarea JSON.
+     * @param command   Numele comenzii executate.
+     * @param playerIdx Indexul jucatorului.
+     * @param deck      Pachetul jucatorului.
+     * @param output    Lista in care se adauga raspunsul.
+     */
     public static void getPlayerDeck(final ObjectMapper mapper, final String command,
                                      final int playerIdx, final ArrayList<Card> deck,
                                      final ArrayNode output) {
@@ -33,6 +43,15 @@ public final class GameCommands {
         output.add(playerDeckObjectNode);
     }
 
+    /**
+     * Returneaza informatii despre eroul unui jucator.
+     *
+     * @param mapper    Obiectul ObjectMapper pentru gestionarea JSON.
+     * @param command   Numele comenzii executate.
+     * @param playerIdx Indexul jucatorului.
+     * @param hero      Eroul jucatorului.
+     * @param output    Lista in care se adauga raspunsul.
+     */
     public static void getPlayerHero(final ObjectMapper mapper, final String command,
                                      final int playerIdx, final Hero hero,
                                      final ArrayNode output) {
@@ -54,19 +73,40 @@ public final class GameCommands {
         output.add(heroObjectNode);
     }
 
-
+    /**
+     * Determina al cui jucator ii este randul.
+     *
+     * @param mapper        Obiectul ObjectMapper pentru gestionarea JSON.
+     * @param command       Numele comenzii executate.
+     * @param currentPlayer Jucatorul curent.
+     * @param playerOne     Referinta la primul jucator.
+     * @param output        Lista in care se adauga raspunsul.
+     */
     public static void getPlayerTurn(final ObjectMapper mapper, final String command,
                                      final Object currentPlayer, final Object playerOne,
                                      final ArrayNode output) {
         ObjectNode playerTurnObjectNode = mapper.createObjectNode();
         playerTurnObjectNode.put("command", command);
-
-        int turn = (currentPlayer == playerOne) ? 1 : 2;
+        int turn;
+        if (currentPlayer == playerOne) {
+            turn = 1;
+        } else {
+            turn = 2;
+        }
         playerTurnObjectNode.put("output", turn);
-
         output.add(playerTurnObjectNode);
     }
 
+    /**
+     * Incheie tura unui jucator si returneaza numarul rundei curente.
+     *
+     * @param currentPlayerHero Eroul jucatorului curent.
+     * @param gameBoard         Tabla de joc.
+     * @param playerIndex       Indexul jucatorului curent.
+     * @param turns             Numarul total de ture.
+     * @param round             Numarul rundei curente.
+     * @return                  Numarul rundei curente.
+     */
     public static int endPlayerTurn(final Hero currentPlayerHero, final GameBoard gameBoard,
                                     final int playerIndex, int turns, int round) {
         currentPlayerHero.setHasAttacked(false);
@@ -85,6 +125,13 @@ public final class GameCommands {
         return round;
     }
 
+    /**
+     * Incheie runda si adauga mana jucatorilor.
+     *
+     * @param playerOne Primul jucator.
+     * @param playerTwo Al doilea jucator.
+     * @param round     Numarul curent al rundei.
+     */
     public static void endRound(final Player playerOne, final Player playerTwo, final int round) {
         playerOne.drawCard();
         playerTwo.drawCard();
@@ -94,6 +141,17 @@ public final class GameCommands {
         playerTwo.setMana(playerTwo.getMana() + manaToAdd);
     }
 
+    /**
+     * Plaseaza o carte pe tabla de joc, verificand mana si disponibilitatea randului.
+     *
+     * @param mapper        Obiectul ObjectMapper pentru gestionarea JSON.
+     * @param action        Actiunea curenta.
+     * @param gameBoard     Tabla de joc.
+     * @param currentPlayer Jucatorul curent.
+     * @param playerOne     Primul jucator.
+     * @param playerTwo     Al doilea jucator.
+     * @param output        Lista in care se adauga raspunsul.
+     */
     public static void placeCard(final ObjectMapper mapper, final Actions action,
                                  final GameBoard gameBoard, final Player currentPlayer,
                                  final Player playerOne, final Player playerTwo,
@@ -130,6 +188,15 @@ public final class GameCommands {
         }
     }
 
+    /**
+     * Returneaza cartile din mana unui jucator.
+     *
+     * @param mapper    Obiectul ObjectMapper pentru gestionarea JSON.
+     * @param action    Actiunea curenta.
+     * @param playerOne Primul jucator.
+     * @param playerTwo Al doilea jucator.
+     * @param output    Lista in care se adauga raspunsul.
+     */
     public static void getCardsInHand(final ObjectMapper mapper, final Actions action,
                                       final Player playerOne, final Player playerTwo,
                                       final ArrayNode output) {
@@ -138,7 +205,12 @@ public final class GameCommands {
         cardsInHandObjectNode.put("playerIdx", action.getPlayerIdx());
 
         ArrayNode cardNode = mapper.createArrayNode();
-        ArrayList<Card> hand = (action.getPlayerIdx() == 1) ? playerOne.getHand() : playerTwo.getHand();
+        ArrayList<Card> hand;
+        if (action.getPlayerIdx() == 1) {
+            hand = playerOne.getHand();
+        } else {
+            hand = playerTwo.getHand();
+        }
 
         for (Card card : hand) {
             cardNode.add(buildCardNode(mapper, card));
@@ -148,6 +220,15 @@ public final class GameCommands {
         output.add(cardsInHandObjectNode);
     }
 
+    /**
+     * Returneaza mana unui jucator.
+     *
+     * @param mapper    Obiectul ObjectMapper pentru gestionarea JSON.
+     * @param action    Actiunea curenta.
+     * @param playerOne Primul jucator.
+     * @param playerTwo Al doilea jucator.
+     * @param output    Lista in care se adauga raspunsul.
+     */
     public static void getPlayerMana(final ObjectMapper mapper, final Actions action,
                                      final Player playerOne, final Player playerTwo,
                                      final ArrayNode output) {
@@ -163,6 +244,14 @@ public final class GameCommands {
         output.add(playerManaNode);
     }
 
+    /**
+     * Returneaza toate cartile aflate pe tabla de joc.
+     *
+     * @param mapper    Obiectul ObjectMapper pentru gestionarea JSON.
+     * @param action    Actiunea curenta.
+     * @param gameBoard Tabla de joc.
+     * @param output    Lista in care se adauga raspunsul.
+     */
     public static void getCardsOnTable(final ObjectMapper mapper, final Actions action,
                                        final GameBoard gameBoard, final ArrayNode output) {
         ObjectNode cardsOnTableNode = mapper.createObjectNode();
@@ -183,6 +272,14 @@ public final class GameCommands {
         output.add(cardsOnTableNode);
     }
 
+    /**
+     * Returneaza cartea aflata intr-o pozitie specifica pe tabla de joc.
+     *
+     * @param mapper    Obiectul ObjectMapper pentru gestionarea JSON.
+     * @param action    Actiunea curenta.
+     * @param gameBoard Tabla de joc.
+     * @param output    Lista in care se adauga raspunsul.
+     */
     public static void getCardAtPosition(final ObjectMapper mapper, final Actions action,
                                          final GameBoard gameBoard, final ArrayNode output) {
         ObjectNode cardAtPositionNode = mapper.createObjectNode();
@@ -195,9 +292,7 @@ public final class GameCommands {
             output.add(cardAtPositionNode);
             return;
         }
-
         Card cardAtPosition = gameBoard.getCard(action.getX(), action.getY());
-
         if (cardAtPosition == null) {
             cardAtPositionNode.put("output", "No card available at that position.");
         } else {
@@ -207,6 +302,17 @@ public final class GameCommands {
         output.add(cardAtPositionNode);
     }
 
+    /**
+     * Permite unei carti sa atace o alta carte.
+     *
+     * @param mapper        Obiectul ObjectMapper pentru gestionarea JSON.
+     * @param action        Actiunea curenta.
+     * @param gameBoard     Tabla de joc.
+     * @param currentPlayer Jucatorul curent.
+     * @param playerOne     Primul jucator.
+     * @param playerTwo     Al doilea jucator.
+     * @param output        Lista in care se adauga eroarea daca exista.
+     */
     public static void cardUsesAttack(final ObjectMapper mapper, final Actions action,
                                       final GameBoard gameBoard, final Player currentPlayer,
                                       final Player playerOne, final Player playerTwo,
@@ -219,14 +325,28 @@ public final class GameCommands {
         Card attackerCard = gameBoard.getCard(xAttacker, yAttacker);
         Card attackedCard = gameBoard.getCard(xAttacked, yAttacked);
 
-        ObjectNode errorCardUsesAttack = prepareErrorResponse(mapper, action, xAttacker, yAttacker, xAttacked, yAttacked);
-        if (hasCardErrors(currentPlayer, playerOne, playerTwo, attackerCard, attackedCard, xAttacked, errorCardUsesAttack, mapper)) {
+        ObjectNode errorCardUsesAttack = prepareErrorResponse(mapper,
+                action, xAttacker, yAttacker, xAttacked, yAttacked);
+        if (hasCardErrors(currentPlayer, playerOne, playerTwo,
+                attackerCard, attackedCard, xAttacked, errorCardUsesAttack)) {
             output.add(errorCardUsesAttack);
             return;
         }
-        performAttack(attackerCard, attackedCard, gameBoard, xAttacked, yAttacked, currentPlayer, playerOne, playerTwo);
+        performAttack(attackerCard, attackedCard, gameBoard, xAttacked, yAttacked,
+                currentPlayer, playerOne, playerTwo);
     }
 
+    /**
+     * Permite unei carti sa foloseasca o abilitate asupra altei carti.
+     *
+     * @param mapper        Obiectul ObjectMapper pentru gestionarea JSON.
+     * @param action        Actiunea curenta.
+     * @param gameBoard     Tabla de joc.
+     * @param currentPlayer Jucatorul curent.
+     * @param playerOne     Primul jucator.
+     * @param playerTwo     Al doilea jucator.
+     * @param output        Lista in care se adauga eroarea daca exista.
+     */
     public static void cardUsesAbility(final ObjectMapper mapper, final Actions action,
                                        final GameBoard gameBoard, final Player currentPlayer,
                                        final Player playerOne, final Player playerTwo,
@@ -239,16 +359,29 @@ public final class GameCommands {
         Card attackerCard = gameBoard.getCard(xAttacker, yAttacker);
         Card attackedCard = gameBoard.getCard(xAttacked, yAttacked);
 
-        ObjectNode errorResponse = prepareErrorResponse(mapper, action, xAttacker, yAttacker, xAttacked, yAttacked);
+        ObjectNode errorResponse = prepareErrorResponse(mapper, action,
+                xAttacker, yAttacker, xAttacked, yAttacked);
 
-        if (hasAbilityErrors(currentPlayer, playerOne, playerTwo, attackerCard, attackedCard, xAttacked, errorResponse, mapper)) {
+        if (hasAbilityErrors(currentPlayer, playerOne, playerTwo,
+                attackerCard, attackedCard, xAttacked, errorResponse)) {
             output.add(errorResponse);
             return;
         }
 
-        performAbility(attackerCard, attackedCard, gameBoard, xAttacked, yAttacked, currentPlayer, playerOne, playerTwo);
+        performAbility(attackerCard, attackedCard, gameBoard, currentPlayer, playerOne, playerTwo);
     }
 
+    /**
+     * Permite unui jucator sa atace eroul advers.
+     *
+     * @param mapper        Obiectul ObjectMapper pentru gestionarea JSON.
+     * @param action        Actiunea curenta.
+     * @param gameBoard     Tabla de joc.
+     * @param currentPlayer Jucatorul curent.
+     * @param playerOne     Primul jucator.
+     * @param playerTwo     Al doilea jucator.
+     * @param output        Lista in care se adauga raspunsul.
+     */
     public static void useAttackHero(final ObjectMapper mapper, final Actions action,
                                      final GameBoard gameBoard, final Player currentPlayer,
                                      final Player playerOne, final Player playerTwo,
@@ -269,15 +402,27 @@ public final class GameCommands {
         }
 
         Hero enemyHero = getEnemyHero(currentPlayer, playerOne, playerTwo);
-        boolean enemyHasTank = checkForEnemyTanks(gameBoard, currentPlayer, playerOne, playerTwo);
+        boolean enemyHasTank = checkForEnemyTanks(gameBoard, currentPlayer, playerOne);
 
         if (isInvalidTankAttack(attackerCard, enemyHasTank, errorUseAttackHero)) {
             output.add(errorUseAttackHero);
             return;
         }
-        performAttackHero(attackerCard, enemyHero, gameBoard, currentPlayer, playerOne, playerTwo, output, mapper);
+        performAttackHero(attackerCard, enemyHero, gameBoard, currentPlayer,
+                playerOne, output, mapper);
     }
 
+    /**
+     * Utilizeaza abilitatea eroului pentru a afecta o linie specificata pe tabla de joc.
+     *
+     * @param mapper      Mapperul utilizat pentru crearea obiectelor JSON.
+     * @param action      Actiunea curenta care contine informatiile necesare.
+     * @param gameBoard   Tabla de joc curenta.
+     * @param currentPlayer Jucatorul care executa abilitatea.
+     * @param playerOne   Primul jucator.
+     * @param playerTwo   Al doilea jucator.
+     * @param output      Lista de raspunsuri care va contine rezultatul actiunii.
+     */
     public static void useHeroAbility(final ObjectMapper mapper, final Actions action,
                                       final GameBoard gameBoard, final Player currentPlayer,
                                       final Player playerOne, final Player playerTwo,
@@ -295,7 +440,8 @@ public final class GameCommands {
         if (CommandHelper.checkHeroHasAttacked(hero, errorUseHeroAbility, output)) {
             return;
         }
-        if (CommandHelper.checkValidRow(hero, affectedRow, currentPlayer, playerOne, playerTwo, errorUseHeroAbility, output)) {
+        if (CommandHelper.checkValidRow(hero, affectedRow, currentPlayer, playerOne, playerTwo,
+                errorUseHeroAbility, output)) {
             return;
         }
 
@@ -305,6 +451,14 @@ public final class GameCommands {
         hero.setHasAttacked(true);
     }
 
+    /**
+     * Obtine toate cartile inghetate de pe tabla de joc.
+     *
+     * @param mapper    Mapperul utilizat pentru crearea obiectelor JSON.
+     * @param action    Actiunea curenta care contine informatiile necesare.
+     * @param gameBoard Tabla de joc curenta.
+     * @param output    Lista de raspunsuri care va contine cartile inghetate.
+     */
     public static void getFrozenCardsOnTable(final ObjectMapper mapper, final Actions action,
                                              final GameBoard gameBoard, final ArrayNode output) {
         ArrayNode frozenCardsArrayNode = mapper.createArrayNode();
@@ -337,27 +491,54 @@ public final class GameCommands {
         playerTwoWins++;
     }
 
-    public static void addTotalGamesPlayed(final ObjectMapper mapper, final String command, final ArrayNode output) {
+    /**
+     * Adauga numarul total de jocuri jucate in lista de raspunsuri.
+     *
+     * @param mapper   Mapperul utilizat pentru crearea obiectelor JSON.
+     * @param command  Comanda curenta executata.
+     * @param output   Lista de raspunsuri care va contine rezultatul.
+     */
+    public static void addTotalGamesPlayed(final ObjectMapper mapper,
+                                           final String command, final ArrayNode output) {
         ObjectNode response = mapper.createObjectNode();
         response.put("command", command);
         response.put("output", playerOneWins + playerTwoWins);
         output.add(response);
     }
 
-    public static void addPlayerOneWins(final ObjectMapper mapper, final String command, final ArrayNode output) {
+    /**
+     * Adauga numarul de victorii ale primului jucator in lista de raspunsuri.
+     *
+     * @param mapper   Mapperul utilizat pentru crearea obiectelor JSON.
+     * @param command  Comanda curenta executata.
+     * @param output   Lista de raspunsuri care va contine rezultatul.
+     */
+    public static void addPlayerOneWins(final ObjectMapper mapper,
+                                        final String command, final ArrayNode output) {
         ObjectNode response = mapper.createObjectNode();
         response.put("command", command);
         response.put("output", playerOneWins);
         output.add(response);
     }
 
-    public static void addPlayerTwoWins(final ObjectMapper mapper, final String command, final ArrayNode output) {
+    /**
+     * Adauga numarul de victorii ale celui de-al doilea jucator in lista de raspunsuri.
+     *
+     * @param mapper   Mapperul utilizat pentru crearea obiectelor JSON.
+     * @param command  Comanda curenta executata.
+     * @param output   Lista de raspunsuri care va contine rezultatul.
+     */
+    public static void addPlayerTwoWins(final ObjectMapper mapper,
+                                        final String command, final ArrayNode output) {
         ObjectNode response = mapper.createObjectNode();
         response.put("command", command);
         response.put("output", playerTwoWins);
         output.add(response);
     }
 
+    /**
+     * Reseteaza numarul de victorii pentru ambii jucatori.
+     */
     public static void resetWins() {
         playerOneWins = 0;
         playerTwoWins = 0;

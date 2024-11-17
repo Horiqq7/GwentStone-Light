@@ -1,7 +1,8 @@
 package game;
 
 import actions.Actions;
-import cards.*;
+import cards.Card;
+import cards.Hero;
 import cards.heroes.EmpressThorina;
 import cards.heroes.GeneralKocioraw;
 import cards.heroes.KingMudface;
@@ -14,8 +15,15 @@ import fileio.CardInput;
 import java.util.ArrayList;
 import static game.GameCommands.*;
 
-public class CommandHelper {
 
+public abstract class CommandHelper {
+    /**
+     * Construieste un obiect JSON pentru o carte.
+     *
+     * @param mapper Obiectul ObjectMapper folosit pentru a crea nodurile JSON.
+     * @param card Cartea pentru care se construieste obiectul JSON.
+     * @return Obiectul JSON care reprezinta cartea.
+     */
     public static ObjectNode buildCardNode(final ObjectMapper mapper, final Card card) {
         ObjectNode cardNode = mapper.createObjectNode();
         cardNode.put("mana", card.getMana());
@@ -33,7 +41,15 @@ public class CommandHelper {
         return cardNode;
     }
 
-    public static ArrayNode createDeckArrayNode(final ObjectMapper mapper, final ArrayList<Card> deck) {
+    /**
+     * Creeaza un obiect JSON care reprezinta un pachet de carti.
+     *
+     * @param mapper Obiectul ObjectMapper folosit pentru a crea nodurile JSON.
+     * @param deck Lista de carti care formeaza pachetul.
+     * @return Obiectul JSON care reprezinta pachetul de carti.
+     */
+    public static ArrayNode createDeckArrayNode(final ObjectMapper mapper,
+                                                final ArrayList<Card> deck) {
         ArrayNode deckArrayNode = mapper.createArrayNode();
 
         for (Card card : deck) {
@@ -44,6 +60,13 @@ public class CommandHelper {
         return deckArrayNode;
     }
 
+    /**
+     * Creeaza un obiect JSON in care include culorile unui erou.
+     *
+     * @param mapper Obiectul ObjectMapper folosit pentru a crea nodurile JSON.
+     * @param hero Eroul pentru care se creeaza obiectul JSON.
+     * @return Obiectul JSON care contine culorile eroului.
+     */
     public static ArrayNode createHeroColorsArrayNode(final ObjectMapper mapper, final Hero hero) {
         ArrayNode heroColors = mapper.createArrayNode();
         for (String color : hero.getColors()) {
@@ -52,6 +75,16 @@ public class CommandHelper {
         return heroColors;
     }
 
+    /**
+     * Plaseaza o carte pe tabla de joc si actualizeaza mana jucatorului.
+     *
+     * @param gameBoard Tabla de joc unde va fi plasata cartea.
+     * @param currentPlayer Jucatorul care joaca.
+     * @param playerOne Jucatorul 1.
+     * @param playerTwo Jucatorul 2.
+     * @param card Cartea care se va juca.
+     * @param handIdx Indicele cartii in mana jucatorului.
+     */
     public static void playCard(final GameBoard gameBoard, final Player currentPlayer,
                                 final Player playerOne, final Player playerTwo,
                                 final Card card, final int handIdx) {
@@ -73,19 +106,46 @@ public class CommandHelper {
         }
     }
 
-    static int determineRowForPlayer(final Card card, boolean isPlayerOne) {
+    /**
+     * Determina randul pe care trebuie plasata o carte, in functie de numele acesteia.
+     *
+     * @param card Cartea care trebuie plasata.
+     * @param isPlayerOne True daca jucatorul curent este jucatorul 1, false daca este jucatorul 2.
+     * @return Randul pe care trebuie plasata cartea.
+     */
+    static int determineRowForPlayer(final Card card, final boolean isPlayerOne) {
         if (card.getName().equals("Goliath") || card.getName().equals("Warden")
                 || card.getName().equals("Miraj") || card.getName().equals("The Ripper")) {
-            return isPlayerOne ? THIRD_ROW : SECOND_ROW;
+            if (isPlayerOne) {
+                return THIRD_ROW;
+            } else {
+                return SECOND_ROW;
+            }
         } else if (card.getName().equals("Sentinel") || card.getName().equals("Berserker")
                 || card.getName().equals("The Cursed One") || card.getName().equals("Disciple")) {
-            return isPlayerOne ? FOURTH_ROW : FIRST_ROW;
+            if (isPlayerOne) {
+                return FOURTH_ROW;
+            } else {
+                return FIRST_ROW;
+            }
         }
         return -1;
     }
 
-    public static ObjectNode prepareErrorResponse(ObjectMapper mapper, Actions action,
-                                                  int xAttacker, int yAttacker, int xAttacked, int yAttacked) {
+    /**
+     * Pregateste un raspuns de eroare pentru o actiune, sub forma unui obiect JSON.
+     *
+     * @param mapper Obiectul ObjectMapper folosit pentru a crea nodurile JSON.
+     * @param action Actiunea care a generat eroarea.
+     * @param xAttacker Coordonata x a cartii atacatoare.
+     * @param yAttacker Coordonata y a cartii atacatoare.
+     * @param xAttacked Coordonata x a cartii atacate.
+     * @param yAttacked Coordonata y a cartii atacate.
+     * @return Obiectul JSON care reprezinta raspunsul de eroare.
+     */
+    public static ObjectNode prepareErrorResponse(final ObjectMapper mapper, final Actions action,
+                                                  final int xAttacker, final int yAttacker,
+                                                  final int xAttacked, final int yAttacked) {
         ObjectNode errorResponse = mapper.createObjectNode();
         errorResponse.put("command", action.getCommand());
 
@@ -102,7 +162,22 @@ public class CommandHelper {
         return errorResponse;
     }
 
-    static boolean hasCardErrors(Player currentPlayer, Player playerOne, Player playerTwo, Card attackerCard, Card attackedCard, int xAttacked, ObjectNode errorResponse, ObjectMapper mapper) {
+    /**
+     * Verifica daca exista erori legate de cartile atacatoare sau atacate.
+     *
+     * @param currentPlayer Jucatorul curent.
+     * @param playerOne Jucatorul 1.
+     * @param playerTwo Jucatorul 2.
+     * @param attackerCard Cartea atacatoare.
+     * @param attackedCard Cartea atacata.
+     * @param xAttacked Coordonata x a cartii atacate.
+     * @param errorResponse Obiectul JSON care va contine eroarea.
+     * @return True daca exista erori, false altfel.
+     */
+    static boolean hasCardErrors(final Player currentPlayer, final Player playerOne,
+                                 final Player playerTwo, final Card attackerCard,
+                                 final Card attackedCard, final int xAttacked,
+                                 final ObjectNode errorResponse) {
         boolean errorFrozen = attackerCard.isFrozen();
         boolean errorAlreadyAttacked = attackerCard.getHasAttacked();
         boolean errorNotEnemyCard = false;
@@ -135,7 +210,22 @@ public class CommandHelper {
         return errorFrozen || errorAlreadyAttacked || errorTankCard || errorNotEnemyCard;
     }
 
-    static boolean hasAbilityErrors(Player currentPlayer, Player playerOne, Player playerTwo, Card attackerCard, Card attackedCard, int xAttacked, ObjectNode errorResponse, ObjectMapper mapper) {
+    /**
+     * Verifica daca exista erori legate de abilitatile cartilor.
+     *
+     * @param currentPlayer Jucatorul curent.
+     * @param playerOne Jucatorul 1.
+     * @param playerTwo Jucatorul 2.
+     * @param attackerCard Cartea atacatoare.
+     * @param attackedCard Cartea atacata.
+     * @param xAttacked Coordonata x a cartii atacate.
+     * @param errorResponse Obiectul JSON care va contine eroarea.
+     * @return True daca exista erori, false altfel.
+     */
+    static boolean hasAbilityErrors(final Player currentPlayer, final Player playerOne,
+                                    final Player playerTwo, final Card attackerCard,
+                                    final Card attackedCard, final int xAttacked,
+                                    final ObjectNode errorResponse) {
         boolean errorFrozen = attackerCard.isFrozen();
         boolean errorAlreadyAttacked = attackerCard.getHasAttacked();
         boolean errorInvalidDiscipleTarget = false;
@@ -147,7 +237,9 @@ public class CommandHelper {
                 if (xAttacked == FIRST_ROW || xAttacked == SECOND_ROW) {
                     errorInvalidDiscipleTarget = true;
                 }
-            } else if (attackerCard.getName().equals("The Cursed One") || attackerCard.getName().equals("The Ripper") || attackerCard.getName().equals("Miraj")) {
+            } else if (attackerCard.getName().equals("The Cursed One")
+                    || attackerCard.getName().equals("The Ripper")
+                    || attackerCard.getName().equals("Miraj")) {
                 if (xAttacked == THIRD_ROW || xAttacked == FOURTH_ROW) {
                     errorNotEnemyCard = true;
                 } else if (playerTwo.getNumberOfTanks() > 0 && !attackedCard.isTankCard()) {
@@ -159,7 +251,9 @@ public class CommandHelper {
                 if (xAttacked == THIRD_ROW || xAttacked == FOURTH_ROW) {
                     errorInvalidDiscipleTarget = true;
                 }
-            } else if (attackerCard.getName().equals("The Cursed One") || attackerCard.getName().equals("The Ripper") || attackerCard.getName().equals("Miraj")) {
+            } else if (attackerCard.getName().equals("The Cursed One")
+                    || attackerCard.getName().equals("The Ripper")
+                    || attackerCard.getName().equals("Miraj")) {
                 if (xAttacked == FIRST_ROW || xAttacked == SECOND_ROW) {
                     errorNotEnemyCard = true;
                 } else if (playerOne.getNumberOfTanks() > 0 && !attackedCard.isTankCard()) {
@@ -167,7 +261,6 @@ public class CommandHelper {
                 }
             }
         }
-
         if (errorFrozen) {
             errorResponse.put("error", "Attacker card is frozen.");
         } else if (errorNotEnemyCard) {
@@ -180,20 +273,29 @@ public class CommandHelper {
             errorResponse.put("error", "Attacked card does not belong to the current player.");
         }
 
-        return errorFrozen || errorAlreadyAttacked || errorInvalidTankCard || errorNotEnemyCard || errorInvalidDiscipleTarget;
+        return errorFrozen || errorAlreadyAttacked || errorInvalidTankCard
+                || errorNotEnemyCard || errorInvalidDiscipleTarget;
     }
 
-    static void performAbility(Card attackerCard, Card attackedCard, GameBoard gameBoard, int xAttacked, int yAttacked, Player currentPlayer, Player playerOne, Player playerTwo) {
-        if (attackerCard.getName().equals("Disciple")) {
-            attackerCard.useDiscipleAbility(attackedCard);
-        } else if (attackerCard.getName().equals("The Cursed One")) {
-            attackerCard.useTheCursedOneAbility(attackedCard);
-        } else if (attackerCard.getName().equals("The Ripper")) {
-            attackerCard.useTheRipperAbility(attackedCard);
-        } else if (attackerCard.getName().equals("Miraj")) {
-            attackerCard.useMirajAbility(attackedCard);
+    /**
+     * Executa abilitatea unei carti asupra unei alte carti.
+     *
+     * @param attackerCard Cartea care ataca.
+     * @param attackedCard Cartea care este atacata.
+     * @param gameBoard Tabla de joc.
+     * @param currentPlayer Jucatorul curent.
+     * @param playerOne Jucatorul 1.
+     * @param playerTwo Jucatorul 2.
+     */
+    static void performAbility(final Card attackerCard, final Card attackedCard,
+                               final GameBoard gameBoard, final Player currentPlayer,
+                               final Player playerOne, final Player playerTwo) {
+        switch (attackerCard.getName()) {
+            case "Disciple" -> attackerCard.useDiscipleAbility(attackedCard);
+            case "The Cursed One" -> attackerCard.useTheCursedOneAbility(attackedCard);
+            case "The Ripper" -> attackerCard.useTheRipperAbility(attackedCard);
+            case "Miraj" -> attackerCard.useMirajAbility(attackedCard);
         }
-
         if (attackedCard.getHealth() <= 0) {
             if (attackedCard.isTankCard()) {
                 if (currentPlayer == playerTwo) {
@@ -204,16 +306,28 @@ public class CommandHelper {
             }
             gameBoard.getBoard().remove(attackedCard);
         }
-
         attackerCard.setHasAttacked(true);
     }
 
-    static void performAttack(Card attackerCard, Card attackedCard, GameBoard gameBoard, int xAttacked, int yAttacked, Player currentPlayer, Player playerOne, Player playerTwo) {
+    /**
+     * Executa un atac asupra unei carti.
+     *
+     * @param attackerCard Cartea care ataca.
+     * @param attackedCard Cartea care este atacata.
+     * @param gameBoard Tabla de joc.
+     * @param xAttacked Coordonata x a cartii atacate.
+     * @param yAttacked Coordonata y a cartii atacate.
+     * @param currentPlayer Jucatorul curent.
+     * @param playerOne Jucatorul 1.
+     * @param playerTwo Jucatorul 2.
+     */
+    static void performAttack(final Card attackerCard, final Card attackedCard,
+                              final GameBoard gameBoard, final int xAttacked,
+                              final int yAttacked, final Player currentPlayer,
+                              final Player playerOne, final Player playerTwo) {
         attackerCard.attackCard(attackerCard, attackedCard);
-
         if (attackedCard.getHealth() <= 0) {
             gameBoard.getBoard().get(xAttacked).remove(yAttacked);
-
             if (attackedCard.isTankCard()) {
                 if (currentPlayer == playerTwo) {
                     playerOne.setNumberOfTanks(playerOne.getNumberOfTanks() - 1);
@@ -224,7 +338,17 @@ public class CommandHelper {
         }
     }
 
-    public static ObjectNode buildErrorResponse(ObjectMapper mapper, Actions action, int xAttacker, int yAttacker) {
+    /**
+     * Construieste un raspuns de eroare pentru o actiune, sub forma unui obiect JSON.
+     *
+     * @param mapper Obiectul ObjectMapper folosit pentru a crea nodurile JSON.
+     * @param action Actiunea care a generat eroarea, continand comanda asociata.
+     * @param xAttacker Coordonata x a cartii atacatoare.
+     * @param yAttacker Coordonata y a cartii atacatoare.
+     * @return Obiectul JSON care reprezinta raspunsul de eroare.
+     */
+    public static ObjectNode buildErrorResponse(final ObjectMapper mapper, final Actions action,
+                                                final int xAttacker, final int yAttacker) {
         ObjectNode errorResponse = mapper.createObjectNode();
         errorResponse.put("command", action.getCommand());
 
@@ -236,7 +360,15 @@ public class CommandHelper {
         return errorResponse;
     }
 
-    public static boolean isCardFrozenOrAttacked(Card attackerCard, ObjectNode errorResponse) {
+    /**
+     * Verifica daca o carte este inghetata sau daca a atacat deja.
+     *
+     * @param attackerCard Cartea atacatoare.
+     * @param errorResponse Obiectul JSON care va contine eroarea.
+     * @return True e inghetata sau a atacat deja, false altfel
+     */
+    public static boolean isCardFrozenOrAttacked(final Card attackerCard,
+                                                 final ObjectNode errorResponse) {
         if (attackerCard.isFrozen()) {
             errorResponse.put("error", "Attacker card is frozen.");
             return true;
@@ -250,15 +382,43 @@ public class CommandHelper {
         return false;
     }
 
-    public static Hero getEnemyHero(Player currentPlayer, Player playerOne, Player playerTwo) {
-        return (currentPlayer == playerOne) ? playerTwo.getHero() : playerOne.getHero();
+    /**
+     * Obtine eroul inamic in functie de jucatorul curent.
+     *
+     * @param currentPlayer Jucatorul curent.
+     * @param playerOne Primul jucator.
+     * @param playerTwo Al doilea jucator.
+     * @return Eroul inamic.
+     */
+    public static Hero getEnemyHero(final Player currentPlayer, final Player playerOne,
+                                    final Player playerTwo) {
+        if (currentPlayer == playerOne) {
+            return playerTwo.getHero();
+        } else {
+            return playerOne.getHero();
+        }
     }
 
-    public static boolean checkForEnemyTanks(GameBoard gameBoard, Player currentPlayer, Player playerOne, Player playerTwo) {
+    /**
+     * Verifica daca inamicii au un tank pe tabla de joc.
+     *
+     * @param gameBoard Tabla de joc.
+     * @param currentPlayer Jucatorul curent.
+     * @param playerOne Primul jucator.
+     * @return true daca inamicii au un tank, altfel false.
+     */
+    public static boolean checkForEnemyTanks(final GameBoard gameBoard, final Player currentPlayer,
+                                             final Player playerOne) {
         boolean enemyHasTank = false;
-        int enemyRowsStart = (currentPlayer == playerOne) ? 0 : 2;
-        int enemyRowsEnd = (currentPlayer == playerOne) ? 2 : gameBoard.getBoard().size();
-
+        int enemyRowsStart;
+        int enemyRowsEnd;
+        if (currentPlayer == playerOne) {
+            enemyRowsStart = 0;
+            enemyRowsEnd = 2;
+        } else {
+            enemyRowsStart = 2;
+            enemyRowsEnd = gameBoard.getBoard().size();
+        }
         for (int i = enemyRowsStart; i < enemyRowsEnd; i++) {
             for (Card card : gameBoard.getBoard().get(i)) {
                 if (card.isTankCard()) {
@@ -270,10 +430,20 @@ public class CommandHelper {
                 break;
             }
         }
+
         return enemyHasTank;
     }
 
-    public static boolean isInvalidTankAttack(Card attackerCard, boolean enemyHasTank, ObjectNode errorResponse) {
+    /**
+     * Verifica daca atacul cu un tank este invalid.
+     *
+     * @param attackerCard Cardul atacator.
+     * @param enemyHasTank Indica daca inamicul are un tank.
+     * @param errorResponse Raspunsul de eroare in cazul unui atac invalid.
+     * @return true daca atacul este invalid, altfel false.
+     */
+    public static boolean isInvalidTankAttack(final Card attackerCard, final boolean enemyHasTank,
+                                              final ObjectNode errorResponse) {
         if (enemyHasTank && !attackerCard.isTankCard()) {
             errorResponse.put("error", "Attacked card is not of type 'Tank'.");
             return true;
@@ -282,8 +452,18 @@ public class CommandHelper {
         return false;
     }
 
-    public static void endGame(Player currentPlayer, Player playerOne,
-                               GameBoard gameBoard, ArrayNode output, ObjectMapper mapper) {
+    /**
+     * Incheie jocul in cazul in care un jucator a castigat.
+     *
+     * @param currentPlayer Jucatorul curent.
+     * @param playerOne Primul jucator.
+     * @param gameBoard Tabla de joc.
+     * @param output Lista de iesire pentru a adauga rezultatul jocului.
+     * @param mapper Obiectul ObjectMapper pentru crearea obiectului JSON.
+     */
+    public static void endGame(final Player currentPlayer, final Player playerOne,
+                               final GameBoard gameBoard, final ArrayNode output,
+                               final ObjectMapper mapper) {
         if (!gameBoard.isGameEnded()) {
             gameBoard.endGame();
             ObjectNode gameEndedNode = mapper.createObjectNode();
@@ -298,11 +478,22 @@ public class CommandHelper {
         }
     }
 
-    public static void performAttackHero(Card attackerCard, Hero enemyHero, GameBoard gameBoard,
-                                         Player currentPlayer, Player playerOne, Player playerTwo,
-                                         ArrayNode output, ObjectMapper mapper) {
+    /**
+     * Efectueaza atacul eroului asupra eroului inamic.
+     *
+     * @param attackerCard Cardul atacator.
+     * @param enemyHero Eroul inamic.
+     * @param gameBoard Tabla de joc.
+     * @param currentPlayer Jucatorul curent.
+     * @param playerOne Primul jucator.
+     * @param output Lista de iesire pentru a adauga rezultatele.
+     * @param mapper Obiectul ObjectMapper pentru crearea obiectelor JSON.
+     */
+    public static void performAttackHero(final Card attackerCard, final Hero enemyHero,
+                                         final GameBoard gameBoard, final Player currentPlayer,
+                                         final Player playerOne, final ArrayNode output,
+                                         final ObjectMapper mapper) {
         enemyHero.setHealth(enemyHero.getHealth() - attackerCard.getAttackDamage());
-
         if (enemyHero.getHealth() <= 0) {
             endGame(currentPlayer, playerOne, gameBoard, output, mapper);
         } else {
@@ -310,7 +501,19 @@ public class CommandHelper {
         }
     }
 
-    public static boolean checkHeroMana(Player currentPlayer, Hero hero, ObjectNode errorUseHeroAbility, ArrayNode output) {
+    /**
+     * Verifica daca jucatorul are suficienta mana pentru a folosi abilitatea eroului.
+     *
+     * @param currentPlayer Jucatorul curent.
+     * @param hero Eroul curent.
+     * @param errorUseHeroAbility Obiectul JSON pentru eroare
+     * in cazul in care nu are suficienta mana.
+     * @param output Lista de iesire pentru a adauga mesajul de eroare.
+     * @return true daca nu are suficienta mana, altfel false.
+     */
+    public static boolean checkHeroMana(final Player currentPlayer, final Hero hero,
+                                        final ObjectNode errorUseHeroAbility,
+                                        final ArrayNode output) {
         if (currentPlayer.getMana() < hero.getMana()) {
             errorUseHeroAbility.put("error", "Not enough mana to use hero's ability.");
             output.add(errorUseHeroAbility);
@@ -319,7 +522,17 @@ public class CommandHelper {
         return false;
     }
 
-    public static boolean checkHeroHasAttacked(Hero hero, ObjectNode errorUseHeroAbility, ArrayNode output) {
+    /**
+     * Verifica daca eroul a atacat deja in acea tura.
+     *
+     * @param hero Eroul curent.
+     * @param errorUseHeroAbility Obiectul JSON pentru eroare in cazul in care eroul a atacat deja.
+     * @param output Lista de iesire pentru a adauga mesajul de eroare.
+     * @return true daca eroul a atacat deja, altfel false.
+     */
+    public static boolean checkHeroHasAttacked(final Hero hero,
+                                               final ObjectNode errorUseHeroAbility,
+                                               final ArrayNode output) {
         if (hero.getHasAttacked()) {
             errorUseHeroAbility.put("error", "Hero has already attacked this turn.");
             output.add(errorUseHeroAbility);
@@ -328,13 +541,28 @@ public class CommandHelper {
         return false;
     }
 
-    public static boolean checkValidRow(Hero hero, int affectedRow, Player currentPlayer,
-                                        Player playerOne, Player playerTwo, ObjectNode errorUseHeroAbility,
-                                        ArrayNode output) {
+    /**
+     * Verifica daca randul selectat pentru abilitatea eroului este valid.
+     *
+     * @param hero Eroul curent.
+     * @param affectedRow Randul afectat de abilitatea eroului.
+     * @param currentPlayer Jucatorul curent.
+     * @param playerOne Primul jucator.
+     * @param playerTwo Al doilea jucator.
+     * @param errorUseHeroAbility Obiectul JSON pentru eroare in cazul in care randul nu este valid.
+     * @param output Lista de iesire pentru a adauga mesajul de eroare.
+     * @return true daca randul nu este valid, altfel false.
+     */
+    public static boolean checkValidRow(final Hero hero, final int affectedRow,
+                                        final Player currentPlayer, final Player playerOne,
+                                        final Player playerTwo,
+                                        final ObjectNode errorUseHeroAbility,
+                                        final ArrayNode output) {
         boolean errorEnemyRow = false;
         boolean errorPlayerRow = false;
 
-        if (hero.getName().equals("Empress Thorina") || hero.getName().equals("Lord Royce")) {
+        if (hero.getName().equals("Empress Thorina")
+                || hero.getName().equals("Lord Royce")) {
             if (currentPlayer == playerOne) {
                 if (affectedRow == THIRD_ROW || affectedRow == FOURTH_ROW) {
                     errorEnemyRow = true;
@@ -344,7 +572,8 @@ public class CommandHelper {
                     errorEnemyRow = true;
                 }
             }
-        } else if (hero.getName().equals("General Kocioraw") || hero.getName().equals("King Mudface")) {
+        } else if (hero.getName().equals("General Kocioraw")
+                || hero.getName().equals("King Mudface")) {
             if (currentPlayer == playerOne) {
                 if (affectedRow == FIRST_ROW || affectedRow == SECOND_ROW) {
                     errorPlayerRow = true;
@@ -371,6 +600,13 @@ public class CommandHelper {
         return false;
     }
 
+    /**
+     * Creaza un erou in functie de datele primite.
+     *
+     * @param heroInput Datele de intrare pentru erou.
+     * @return Eroul creat.
+     * @throws IllegalArgumentException Daca numele eroului este necunoscut.
+     */
     public static Hero createHero(final CardInput heroInput) {
         switch (heroInput.getName()) {
             case "Lord Royce":

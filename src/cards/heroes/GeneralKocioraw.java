@@ -5,7 +5,7 @@ import cards.Hero;
 import fileio.CardInput;
 import game.GameBoard;
 
-public class GeneralKocioraw extends Hero {
+public final class GeneralKocioraw extends Hero {
 
     public GeneralKocioraw(final CardInput cardInput) {
         super(cardInput);
