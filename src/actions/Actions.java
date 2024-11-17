@@ -1,4 +1,4 @@
-package game;
+package actions;
 
 import fileio.ActionsInput;
 import fileio.Coordinates;

@@ -1,5 +1,6 @@
 package game;
 
+import actions.Actions;
 import fileio.ActionsInput;
 import fileio.GameInput;
 import java.util.ArrayList;

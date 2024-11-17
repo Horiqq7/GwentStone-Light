@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import checker.CheckerConstants;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import fileio.GameInput;
 import fileio.Input;
 import java.io.File;
@@ -16,15 +15,17 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Objects;
-import game.Actions;
+import actions.Actions;
 import game.Game;
-import game.GameHelper;
+import game.GameCommands;
 import game.Player;
 import game.GameBoard;
 import game.Decks;
 import cards.Card;
 import java.util.Collections;
 import java.util.Random;
+
+import static game.CommandHelper.createHero;
 
 /**
  * The entry point to this homework. It runs the checker that tests your implentation.
@@ -103,7 +104,7 @@ public final class Main {
         Decks playerOneDecks = new Decks(inputData.getPlayerOneDecks());
         Decks playerTwoDecks = new Decks(inputData.getPlayerTwoDecks());
         ArrayList<Game> games = new ArrayList<>();
-        GameHelper.resetWins();
+        GameCommands.resetWins();
 
         for (GameInput newGame : inputData.getGames()) {
             games.add(new Game(newGame));
@@ -112,8 +113,9 @@ public final class Main {
         for (Game game : games) {
             int index1 = game.getStartGame().getPlayerOneDeckIdx();
             int index2 = game.getStartGame().getPlayerTwoDeckIdx();
-            Hero heroOne = new Hero(game.getStartGame().getPlayerOneHero());
-            Hero heroTwo = new Hero(game.getStartGame().getPlayerTwoHero());
+
+            Hero heroOne = createHero(game.getStartGame().getPlayerOneHero());
+            Hero heroTwo = createHero(game.getStartGame().getPlayerTwoHero());
 
             ArrayList<Card> playerOneDeck = resetDeck(playerOneDecks.deckIndex(index1));
             ArrayList<Card> playerTwoDeck = resetDeck(playerTwoDecks.deckIndex(index2));
@@ -142,128 +144,93 @@ public final class Main {
             for (Actions action : game.getActions()) {
                 switch (action.getCommand()) {
                     case "getPlayerDeck":
-                        int index = action.getPlayerIdx();
-                        ArrayList<Card> deck;
-                        if (index == 1) {
-                            deck = playerOne.getDeck();
-                        } else {
-                            deck = playerTwo.getDeck();
-                        }
-                        ObjectNode playerDeckObjectNode = GameHelper.getPlayerDeck(mapper,
-                                action.getCommand(), index, deck);
-                        output.add(playerDeckObjectNode);
-                    break;
+                        int deckIndex = action.getPlayerIdx();
+                        ArrayList<Card> deck = (deckIndex == 1) ? playerOne.getDeck() : playerTwo.getDeck();
+                        GameCommands.getPlayerDeck(mapper, action.getCommand(), deckIndex, deck, output);
+                        break;
 
                     case "getPlayerHero":
                         int heroIndex = action.getPlayerIdx();
-                        Hero hero;
-                        if (heroIndex == 1) {
-                            hero = playerOne.getHero();
-                        } else {
-                            hero = playerTwo.getHero();
-                        }
-                        ObjectNode heroObjectNode = GameHelper.getPlayerHero(mapper,
-                                action.getCommand(), heroIndex, hero);
-                        output.add(heroObjectNode);
-                    break;
+                        Hero hero = (heroIndex == 1) ? playerOne.getHero() : playerTwo.getHero();
+                        GameCommands.getPlayerHero(mapper, action.getCommand(), heroIndex, hero, output);
+                        break;
 
                     case "getPlayerTurn":
-                        ObjectNode playerTurnObjectNode;
-                        if (currentPlayer == playerOne) {
-                            playerTurnObjectNode = GameHelper.getPlayerTurn(mapper,
-                                    action.getCommand(), currentPlayer, playerOne);
-                        } else {
-                            playerTurnObjectNode = GameHelper.getPlayerTurn(mapper,
-                                    action.getCommand(), currentPlayer, playerOne);
-                        }
-                        output.add(playerTurnObjectNode);
-                    break;
+                        GameCommands.getPlayerTurn(mapper, action.getCommand(), currentPlayer, playerOne, output);
+                        break;
 
                     case "endPlayerTurn":
-                        int playerIndex;
-                        if (currentPlayer == playerOne) {
-                            playerIndex = 1;
-                        } else {
-                            playerIndex = 2;
-                        }
-                        round = GameHelper.endPlayerTurn(currentPlayer.getHero(), gameBoard,
-                                playerIndex, turns, round);
+                        int playerIndex = (currentPlayer == playerOne) ? 1 : 2;
+                        round = GameCommands.endPlayerTurn(currentPlayer.getHero(), gameBoard, playerIndex, turns, round);
                         turns++;
-                        if (currentPlayer == playerOne) {
-                            currentPlayer = playerTwo;
-                        } else {
-                            currentPlayer = playerOne;
-                        }
+                        currentPlayer = (currentPlayer == playerOne) ? playerTwo : playerOne;
                         if (turns % 2 == 0) {
-                            GameHelper.endRound(playerOne, playerTwo, round);
+                            GameCommands.endRound(playerOne, playerTwo, round);
                         }
-                    break;
+                        break;
 
                     case "placeCard":
-                        GameHelper.placeCard(mapper, action, gameBoard,
+                        GameCommands.placeCard(mapper, action, gameBoard,
                                 currentPlayer, playerOne, playerTwo, output);
                         break;
 
                     case "getCardsInHand":
-                        GameHelper.getCardsInHand(mapper, action, playerOne, playerTwo, output);
+                        GameCommands.getCardsInHand(mapper, action, playerOne, playerTwo, output);
                         break;
 
                     case "getPlayerMana":
-                        GameHelper.getPlayerMana(mapper, action, playerOne, playerTwo, output);
+                        GameCommands.getPlayerMana(mapper, action, playerOne, playerTwo, output);
                         break;
 
                     case "getCardsOnTable":
-                        GameHelper.getCardsOnTable(mapper, action, gameBoard, output);
+                        GameCommands.getCardsOnTable(mapper, action, gameBoard, output);
                         break;
 
                     case "getCardAtPosition":
-                        GameHelper.getCardAtPosition(mapper, action, gameBoard, output);
+                        GameCommands.getCardAtPosition(mapper, action, gameBoard, output);
                         break;
 
                     case "cardUsesAttack":
-                        GameHelper.cardUsesAttack(mapper, action, gameBoard,
+                        GameCommands.cardUsesAttack(mapper, action, gameBoard,
                                 currentPlayer, playerOne, playerTwo, output);
                         break;
 
                     case "cardUsesAbility":
-                        GameHelper.cardUsesAbility(mapper, action, gameBoard,
+                        GameCommands.cardUsesAbility(mapper, action, gameBoard,
                                 currentPlayer, playerOne, playerTwo, output);
                         break;
 
                     case "useAttackHero":
                         if (!gameBoard.isGameEnded()) {
-                            GameHelper.useAttackHero(mapper, action, gameBoard,
+                            GameCommands.useAttackHero(mapper, action, gameBoard,
                                     currentPlayer, playerOne, playerTwo, output);
                         }
                         break;
 
                     case "useHeroAbility":
                         if (!gameBoard.isGameEnded()) {
-                            GameHelper.useHeroAbility(mapper, action, gameBoard,
+                            GameCommands.useHeroAbility(mapper, action, gameBoard,
                                     currentPlayer, playerOne, playerTwo, output);
                         }
                         break;
 
                     case "getFrozenCardsOnTable":
-                        GameHelper.getFrozenCardsOnTable(mapper, action, gameBoard, output);
+                        GameCommands.getFrozenCardsOnTable(mapper, action, gameBoard, output);
                         break;
 
                     case "getTotalGamesPlayed":
-                        ObjectNode totalGamesNode = GameHelper.getTotalGamesPlayed(mapper,
-                                action.getCommand());
-                        output.add(totalGamesNode);
+                        GameCommands.addTotalGamesPlayed(mapper, action.getCommand(), output);
                         break;
 
                     case "getPlayerOneWins":
-                        ObjectNode playerOneWinsNode = GameHelper.getPlayerOneWins(mapper,
-                                action.getCommand());
-                        output.add(playerOneWinsNode);
+                        GameCommands.addPlayerOneWins(mapper, action.getCommand(), output);
                         break;
 
                     case "getPlayerTwoWins":
-                        ObjectNode playerTwoWinsNode = GameHelper.getPlayerTwoWins(mapper,
-                                action.getCommand());
-                        output.add(playerTwoWinsNode);
+                        GameCommands.addPlayerTwoWins(mapper, action.getCommand(), output);
+                        break;
+
+                    default:
                         break;
                 }
             }

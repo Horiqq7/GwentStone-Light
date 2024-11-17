@@ -7,6 +7,7 @@ import cards.Card;
 
 public final class Decks {
     private final ArrayList<ArrayList<Card>> decks;
+
     public Decks(final DecksInput decksInput) {
         this.decks = new ArrayList<>();
         for (ArrayList<CardInput> deckInput : decksInput.getDecks()) {
@@ -19,6 +20,12 @@ public final class Decks {
         }
     }
 
+    /**
+     * Returneaza deck-ul de la un index specificat.
+     *
+     * @param index Indexul deck-ului dorit.
+     * @return Lista de obiecte Card care reprezinta deck-ul de la indexul dat.
+     */
     public ArrayList<Card> deckIndex(final int index) {
         return this.decks.get(index);
     }

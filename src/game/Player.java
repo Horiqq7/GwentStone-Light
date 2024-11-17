@@ -5,13 +5,11 @@ import cards.Hero;
 import java.util.ArrayList;
 
 public final class Player {
-    private String name;
-    private final ArrayList<Card> deck;
-    private final ArrayList<Card> hand;
-    private ArrayList<Card> field;
-    private int mana;
-    private final Hero hero;
-    private int numberOfTanks;
+    private final ArrayList<Card> deck; // Deck-ul jucatorului
+    private final ArrayList<Card> hand; // Cartile in mana
+    private int mana; // Mana disponibila
+    private final Hero hero; // Eroul jucatorului
+    private int numberOfTanks; // Numarul de carti Tank pe teren
 
     public Player(final ArrayList<Card> playerDeck, final Hero hero) {
         this.hero = hero;
@@ -22,10 +20,15 @@ public final class Player {
         this.numberOfTanks = 0;
     }
 
+    /**
+     * Trage o carte din pachetul jucatorului si o adauga in mana acestuia.
+     * Daca pachetul nu este gol, prima carte este eliminata din pachet
+     * si adaugata in mana jucatorului.
+     */
     public void drawCard() {
         if (!deck.isEmpty()) {
-            hand.add(deck.getFirst());
-            deck.removeFirst();
+            hand.add(deck.get(0));
+            deck.remove(0);
         }
     }
 

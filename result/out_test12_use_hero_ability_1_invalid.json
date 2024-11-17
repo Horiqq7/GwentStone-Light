@@ -67,12 +67,12 @@
 }, {
   "command" : "getFrozenCardsOnTable",
   "output" : [ {
-    "name" : "Berserker",
-    "colors" : [ "Red", "Blue", "Pink" ],
+    "mana" : 1,
     "attackDamage" : 3,
     "health" : 1,
-    "mana" : 1,
-    "description" : "Premium card: Fear him. Your last breath is now."
+    "description" : "Premium card: Fear him. Your last breath is now.",
+    "colors" : [ "Red", "Blue", "Pink" ],
+    "name" : "Berserker"
   } ]
 }, {
   "command" : "getPlayerTurn",
@@ -80,40 +80,40 @@
 }, {
   "command" : "getFrozenCardsOnTable",
   "output" : [ {
-    "name" : "The Ripper",
-    "colors" : [ "Orange", "Red", "Black" ],
+    "mana" : 3,
     "attackDamage" : 6,
     "health" : 3,
-    "mana" : 3,
-    "description" : "Premium card: Ravished by the winds of hell, no soul is to be forgiven."
+    "description" : "Premium card: Ravished by the winds of hell, no soul is to be forgiven.",
+    "colors" : [ "Orange", "Red", "Black" ],
+    "name" : "The Ripper"
   }, {
-    "name" : "Miraj",
-    "colors" : [ "Yellow", "Orange", "Red" ],
+    "mana" : 4,
     "attackDamage" : 4,
     "health" : 4,
-    "mana" : 4,
-    "description" : "Standard card: When he is near, close your eyes. They betray your mind."
+    "description" : "Standard card: When he is near, close your eyes. They betray your mind.",
+    "colors" : [ "Yellow", "Orange", "Red" ],
+    "name" : "Miraj"
   }, {
-    "name" : "The Ripper",
-    "colors" : [ "Orange", "Red", "Black" ],
+    "mana" : 4,
     "attackDamage" : 5,
     "health" : 4,
-    "mana" : 4,
-    "description" : "Standard card: Death incarnate. No better time to die than now."
-  }, {
-    "name" : "The Ripper",
+    "description" : "Standard card: Death incarnate. No better time to die than now.",
     "colors" : [ "Orange", "Red", "Black" ],
+    "name" : "The Ripper"
+  }, {
+    "mana" : 4,
     "attackDamage" : 6,
     "health" : 4,
-    "mana" : 4,
-    "description" : "Premium card: Ravished by the winds of hell, no soul is to be forgiven."
+    "description" : "Premium card: Ravished by the winds of hell, no soul is to be forgiven.",
+    "colors" : [ "Orange", "Red", "Black" ],
+    "name" : "The Ripper"
   }, {
-    "name" : "The Ripper",
-    "colors" : [ "Black", "Yellow" ],
+    "mana" : 4,
     "attackDamage" : 5,
     "health" : 3,
-    "mana" : 4,
-    "description" : "Standard card: Death incarnate. No better time to die than now."
+    "description" : "Standard card: Death incarnate. No better time to die than now.",
+    "colors" : [ "Black", "Yellow" ],
+    "name" : "The Ripper"
   } ]
 }, {
   "command" : "useHeroAbility",
