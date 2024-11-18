@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 import static game.CommandHelper.*;
 /**
- * Clasa GameCommands contine metode statice care gestioneaza comenzile din joc.
+ * Clasa GameCommands contine metode care gestioneaza comenzile din joc.
  */
 public abstract class GameCommands {
     static final int FIRST_ROW = 0;
@@ -44,7 +44,7 @@ public abstract class GameCommands {
     }
 
     /**
-     * Returneaza informatii despre eroul unui jucator.
+     * Returneaza informatiile despre eroul unui jucator.
      *
      * @param mapper    Obiectul ObjectMapper pentru gestionarea JSON.
      * @param command   Numele comenzii executate.
@@ -135,8 +135,12 @@ public abstract class GameCommands {
     public static void endRound(final Player playerOne, final Player playerTwo, final int round) {
         playerOne.drawCard();
         playerTwo.drawCard();
-
-        int manaToAdd = Math.min(round, MAX_MANA_PER_ROUND);
+        int manaToAdd;
+        if (round < MAX_MANA_PER_ROUND) {
+            manaToAdd = round;
+        } else {
+            manaToAdd = MAX_MANA_PER_ROUND;
+        }
         playerOne.setMana(playerOne.getMana() + manaToAdd);
         playerTwo.setMana(playerTwo.getMana() + manaToAdd);
     }
@@ -404,12 +408,13 @@ public abstract class GameCommands {
         Hero enemyHero = getEnemyHero(currentPlayer, playerOne, playerTwo);
         boolean enemyHasTank = checkForEnemyTanks(gameBoard, currentPlayer, playerOne);
 
-        if (isInvalidTankAttack(attackerCard, enemyHasTank, errorUseAttackHero)) {
+        if (isInvalidTankAttack(enemyHasTank, errorUseAttackHero)) {
             output.add(errorUseAttackHero);
             return;
         }
-        performAttackHero(attackerCard, enemyHero, gameBoard, currentPlayer,
-                playerOne, output, mapper);
+
+        performAttackHero(attackerCard, enemyHero, gameBoard,
+                currentPlayer, playerOne, output, mapper);
     }
 
     /**

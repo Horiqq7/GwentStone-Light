@@ -23,12 +23,12 @@ public final class Player {
     /**
      * Trage o carte din pachetul jucatorului si o adauga in mana acestuia.
      * Daca pachetul nu este gol, prima carte este eliminata din pachet
-     * si adaugata in mana jucatorului.
+     * si e adaugata in mana jucatorului.
      */
     public void drawCard() {
         if (!deck.isEmpty()) {
-            hand.add(deck.get(0));
-            deck.remove(0);
+            hand.add(deck.getFirst());
+            deck.removeFirst();
         }
     }
 

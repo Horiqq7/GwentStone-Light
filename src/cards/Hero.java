@@ -18,7 +18,7 @@ public abstract class Hero extends Card {
     }
 
     /**
-     * Metoda abstractă pentru folosirea abilității eroului.
+     * Metoda abstracta pentru folosirea abilitatii eroului.
      *
      * @param gameBoard   tabla de joc
      * @param affectedRow rândul afectat

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Clasa Card reprezinta o carte care poate fi folosita intr-un joc de carti.
+ * Clasa Card reprezinta o carte care poate fi folosita intr-un joc.
  * Aceasta clasa este extinsa de catre alte clase care definesc comportamente
  * si abilitatile speciale ale cartilor.
  */
@@ -67,25 +67,25 @@ public class Card {
     }
 
     /**
-     * Foloseste abilitatea Disciple care creste viata unei carti aliate cu 2.
+     * Foloseste abilitatea minionului Disciple.
      *
-     * @param ally cartea care va beneficia de abilitatea Disciple
+     * @param ally cartea care va beneficia de abilitatea minionului
      */
     public void useDiscipleAbility(final Card ally) {
         new Disciple().use(this, ally);
     }
 
     /**
-     * Foloseste abilitatea The Cursed One care schimba atacul si viata unei carti tinta.
+     * Foloseste abilitatea minionului The Cursed One.
      *
-     * @param target cartea care va fi afectata de abilitatea The Cursed One
+     * @param target cartea care va fi afectata de abilitatea acestuia
      */
     public void useTheCursedOneAbility(final Card target) {
         new TheCursedOne().use(this, target);
     }
 
     /**
-     * Foloseste abilitatea Miraj care schimba viata dintre atacator si tinta.
+     * Foloseste abilitatea minionului Miraj.
      *
      * @param target cartea tinta ale carei valori ale vietii vor fi schimbate cu atacatorul
      */
@@ -94,9 +94,9 @@ public class Card {
     }
 
     /**
-     * Foloseste abilitatea The Ripper care reduce atacul unei carti tinta cu 2.
+     * Foloseste abilitatea minionului The Ripper.
      *
-     * @param target cartea tinta ale carei atacuri vor fi reduse
+     * @param target cartea tinta al carui atac va fi redus
      */
     public void useTheRipperAbility(final Card target) {
         new TheRipper().use(this, target);
@@ -111,9 +111,9 @@ public class Card {
         return this.name.equals("Goliath") || this.name.equals("Warden");
     }
     /**
-     * Aplica daune carții, reducandu-i viata.
+     * Scade viata unei carti.
      *
-     * @param damage cantitatea de daune primite
+     * @param damage cu cat de mult este scazuta viata
      */
     public void takeDamage(final int damage) {
         health -= damage;
@@ -122,7 +122,7 @@ public class Card {
     /**
      * Obtine valoarea manei pentru aceasta carte.
      *
-     * @return mana valorii curente ale carții
+     * @return mana valorii curente ale cartii
      */
     public int getMana() {
         return mana;
@@ -138,18 +138,18 @@ public class Card {
     }
 
     /**
-     * Obtine valoarea daunei de atac pentru aceasta carte.
+     * Obtine valoarea attack damage-ului pentru aceasta carte.
      *
-     * @return atacul curent al cartii
+     * @return attack damage-ul curent al cartii
      */
     public int getAttackDamage() {
         return attackDamage;
     }
 
     /**
-     * Seteaza valoarea daunei de atac pentru aceasta carte.
+     * Seteaza valoarea attack damage-ului pentru aceasta carte.
      *
-     * @param attackDamage valoarea de atac care trebuie setata
+     * @param attackDamage attack damage-ul care trebuie setat
      */
     public void setAttackDamage(final int attackDamage) {
         this.attackDamage = attackDamage;
@@ -158,7 +158,7 @@ public class Card {
     /**
      * Seteaza valoarea vietii pentru aceasta carte.
      *
-     * @param health valoarea de viata pentru a fi setata
+     * @param health valoarea vietii ce este setata
      */
     public void setHealth(final int health) {
         this.health = health;
@@ -219,16 +219,16 @@ public class Card {
     }
 
     /**
-     * Seteaza starea de inghet a acestei carti.
+     * Seteaza cartea ca fiind inghetata.
      *
-     * @param frozen true pentru inghetat, false pentru cand nu e inghetat
+     * @param frozen true pentru cand e inghetata, false pentru cand nu e inghetata
      */
     public void setFrozen(final boolean frozen) {
         this.frozen = frozen;
     }
 
     /**
-     * Seteaza starea de atac al acestei carti.
+     * Seteaza starea de atac a acestei carti.
      *
      * @param hasAttacked true daca a atacat, false in caz contrar
      */
@@ -237,7 +237,7 @@ public class Card {
     }
 
     /**
-     * Obtine starea de atac al acestei carti.
+     * Obtine starea de atac a acestei carti.
      *
      * @return true daca a atacat, false in caz contrar
      */

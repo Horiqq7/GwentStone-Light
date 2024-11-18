@@ -65,7 +65,7 @@ public final class GameBoard {
      */
     public void resetBoard() {
         for (ArrayList<Card> cards : board) {
-            cards.clear(); // Goleste fiecare rand
+            cards.clear();
         }
         this.gameEnded = false;
     }
@@ -83,7 +83,7 @@ public final class GameBoard {
     /**
      * Returneaza toate cartile de pe tabla, grupate pe randuri.
      *
-     * @return O lista de randuri care contin carti.
+     * @return cartile de pe fiecare rand.
      */
     public ArrayList<ArrayList<Card>> getCardsOnTable() {
         ArrayList<ArrayList<Card>> nonEmptyRows = new ArrayList<>();
@@ -98,7 +98,7 @@ public final class GameBoard {
     /**
      * Returneaza intreaga tabla de joc.
      *
-     * @return O lista de randuri, fiecare continand carti.
+     * @return tabla de joc.
      */
     public ArrayList<ArrayList<Card>> getBoard() {
         return board;

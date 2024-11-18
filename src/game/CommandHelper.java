@@ -82,7 +82,7 @@ public abstract class CommandHelper {
      * @param currentPlayer Jucatorul care joaca.
      * @param playerOne Jucatorul 1.
      * @param playerTwo Jucatorul 2.
-     * @param card Cartea care se va juca.
+     * @param card Cartea care se va plasa pe masa.
      * @param handIdx Indicele cartii in mana jucatorului.
      */
     public static void playCard(final GameBoard gameBoard, final Player currentPlayer,
@@ -133,7 +133,30 @@ public abstract class CommandHelper {
     }
 
     /**
-     * Pregateste un raspuns de eroare pentru o actiune, sub forma unui obiect JSON.
+     * Construieste un raspuns de eroare pentru o actiune de tip atac, sub forma unui obiect JSON.
+     *
+     * @param mapper Obiectul ObjectMapper folosit pentru a crea nodurile JSON.
+     * @param action Actiunea care a generat eroarea, continand comanda asociata.
+     * @param xAttacker Coordonata x a cartii atacatoare.
+     * @param yAttacker Coordonata y a cartii atacatoare.
+     * @return Obiectul JSON care reprezinta raspunsul de eroare.
+     */
+    public static ObjectNode buildErrorResponse(final ObjectMapper mapper, final Actions action,
+                                                final int xAttacker, final int yAttacker) {
+        ObjectNode errorResponse = mapper.createObjectNode();
+        errorResponse.put("command", action.getCommand());
+
+        ObjectNode attackerCoordinates = mapper.createObjectNode();
+        attackerCoordinates.put("x", xAttacker);
+        attackerCoordinates.put("y", yAttacker);
+        errorResponse.set("cardAttacker", attackerCoordinates);
+
+        return errorResponse;
+    }
+
+
+    /**
+     * Pregateste un raspuns de eroare pentru o actiune de tip atac, sub forma unui obiect JSON.
      *
      * @param mapper Obiectul ObjectMapper folosit pentru a crea nodurile JSON.
      * @param action Actiunea care a generat eroarea.
@@ -146,13 +169,7 @@ public abstract class CommandHelper {
     public static ObjectNode prepareErrorResponse(final ObjectMapper mapper, final Actions action,
                                                   final int xAttacker, final int yAttacker,
                                                   final int xAttacked, final int yAttacked) {
-        ObjectNode errorResponse = mapper.createObjectNode();
-        errorResponse.put("command", action.getCommand());
-
-        ObjectNode attackerCoordinates = mapper.createObjectNode();
-        attackerCoordinates.put("x", xAttacker);
-        attackerCoordinates.put("y", yAttacker);
-        errorResponse.set("cardAttacker", attackerCoordinates);
+        ObjectNode errorResponse = buildErrorResponse(mapper, action, xAttacker, yAttacker);
 
         ObjectNode attackedCoordinates = mapper.createObjectNode();
         attackedCoordinates.put("x", xAttacked);
@@ -170,7 +187,7 @@ public abstract class CommandHelper {
      * @param playerTwo Jucatorul 2.
      * @param attackerCard Cartea atacatoare.
      * @param attackedCard Cartea atacata.
-     * @param xAttacked Coordonata x a cartii atacate.
+     * @param xAttacked Coordonata x a cartii atacate (randul).
      * @param errorResponse Obiectul JSON care va contine eroarea.
      * @return True daca exista erori, false altfel.
      */
@@ -339,28 +356,6 @@ public abstract class CommandHelper {
     }
 
     /**
-     * Construieste un raspuns de eroare pentru o actiune, sub forma unui obiect JSON.
-     *
-     * @param mapper Obiectul ObjectMapper folosit pentru a crea nodurile JSON.
-     * @param action Actiunea care a generat eroarea, continand comanda asociata.
-     * @param xAttacker Coordonata x a cartii atacatoare.
-     * @param yAttacker Coordonata y a cartii atacatoare.
-     * @return Obiectul JSON care reprezinta raspunsul de eroare.
-     */
-    public static ObjectNode buildErrorResponse(final ObjectMapper mapper, final Actions action,
-                                                final int xAttacker, final int yAttacker) {
-        ObjectNode errorResponse = mapper.createObjectNode();
-        errorResponse.put("command", action.getCommand());
-
-        ObjectNode attackerCoordinates = mapper.createObjectNode();
-        attackerCoordinates.put("x", xAttacker);
-        attackerCoordinates.put("y", yAttacker);
-        errorResponse.set("cardAttacker", attackerCoordinates);
-
-        return errorResponse;
-    }
-
-    /**
      * Verifica daca o carte este inghetata sau daca a atacat deja.
      *
      * @param attackerCard Cartea atacatoare.
@@ -430,25 +425,22 @@ public abstract class CommandHelper {
                 break;
             }
         }
-
         return enemyHasTank;
     }
 
     /**
      * Verifica daca atacul cu un tank este invalid.
      *
-     * @param attackerCard Cardul atacator.
      * @param enemyHasTank Indica daca inamicul are un tank.
      * @param errorResponse Raspunsul de eroare in cazul unui atac invalid.
      * @return true daca atacul este invalid, altfel false.
      */
-    public static boolean isInvalidTankAttack(final Card attackerCard, final boolean enemyHasTank,
+    public static boolean isInvalidTankAttack(final boolean enemyHasTank,
                                               final ObjectNode errorResponse) {
-        if (enemyHasTank && !attackerCard.isTankCard()) {
+        if (enemyHasTank) {
             errorResponse.put("error", "Attacked card is not of type 'Tank'.");
             return true;
         }
-
         return false;
     }
 
@@ -601,7 +593,7 @@ public abstract class CommandHelper {
     }
 
     /**
-     * Creaza un erou in functie de datele primite.
+     * Creeaza un erou in functie de datele primite.
      *
      * @param heroInput Datele de intrare pentru erou.
      * @return Eroul creat.
@@ -618,7 +610,7 @@ public abstract class CommandHelper {
             case "General Kocioraw":
                 return new GeneralKocioraw(heroInput);
             default:
-                throw new IllegalArgumentException("Unknown hero: " + heroInput.getName());
+                return null;
         }
     }
 }

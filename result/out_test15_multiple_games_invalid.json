@@ -641,6 +641,13 @@
   "playerIdx" : 2,
   "output" : 62
 }, {
+  "command" : "useAttackHero",
+  "cardAttacker" : {
+    "x" : 1,
+    "y" : 1
+  },
+  "error" : "Attacked card is not of type 'Tank'."
+}, {
   "command" : "getCardAtPosition",
   "x" : 2,
   "y" : 0,
@@ -688,8 +695,6 @@
   "command" : "getFrozenCardsOnTable",
   "output" : [ ]
 }, {
-  "gameEnded" : "Player two killed the enemy hero."
-}, {
   "command" : "getPlayerTurn",
   "output" : 2
 }, {
@@ -720,6 +725,8 @@
     "name" : "The Cursed One"
   }
 }, {
+  "gameEnded" : "Player two killed the enemy hero."
+}, {
   "command" : "getCardsOnTable",
   "output" : [ [ {
     "mana" : 1,
@@ -736,13 +743,6 @@
     "colors" : [ "Black", "White" ],
     "name" : "Sentinel"
   } ], [ {
-    "mana" : 1,
-    "attackDamage" : 6,
-    "health" : 8,
-    "description" : "Premium card: Ravished by the winds of hell, no soul is to be forgiven.",
-    "colors" : [ "Black", "Yellow" ],
-    "name" : "The Ripper"
-  }, {
     "mana" : 2,
     "attackDamage" : 6,
     "health" : 6,
