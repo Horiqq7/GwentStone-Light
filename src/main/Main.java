@@ -22,10 +22,10 @@ import game.Player;
 import game.GameBoard;
 import game.Decks;
 import cards.Card;
-import java.util.Collections;
-import java.util.Random;
 
 import static game.CommandHelper.createHero;
+import static game.Decks.resetDeck;
+import static game.Decks.shuffleDeck;
 
 /**
  * The entry point to this homework. It runs the checker that tests your implentation.
@@ -68,7 +68,6 @@ public final class Main {
 
         Checker.calculateScore();
     }
-
     /**
      * @param filePath1 for input file
      * @param filePath2 for output file
@@ -78,28 +77,7 @@ public final class Main {
         ObjectMapper objectMapper = new ObjectMapper();
         Input inputData = objectMapper.readValue(new File(CheckerConstants.TESTS_PATH + filePath1),
                 Input.class);
-
-
         ArrayNode output = objectMapper.createArrayNode();
-
-        /*
-         * TODO Implement your function here
-         *
-         * How to add output to the output array?
-         * There are multiple ways to do this, here is one example:
-         *
-         * ObjectMapper mapper = new ObjectMapper();
-         *
-         * ObjectNode objectNode = mapper.createObjectNode();
-         * objectNode.put("field_name", "field_value");
-         *
-         * ArrayNode arrayNode = mapper.createArrayNode();
-         * arrayNode.add(objectNode);
-         *
-         * output.add(arrayNode);
-         * output.add(objectNode);
-         *
-         */
         ObjectMapper mapper = new ObjectMapper();
         Decks playerOneDecks = new Decks(inputData.getPlayerOneDecks());
         Decks playerTwoDecks = new Decks(inputData.getPlayerTwoDecks());
@@ -258,23 +236,7 @@ public final class Main {
                 }
             }
         }
-
         ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
         objectWriter.writeValue(new File(filePath2), output);
     }
-
-    private static ArrayList<Card> shuffleDeck(final ArrayList<Card> deck, final int seed) {
-        Random random = new Random(seed);
-        Collections.shuffle(deck, random);
-        return deck;
-    }
-
-    private static ArrayList<Card> resetDeck(final ArrayList<Card> originalDeck) {
-        ArrayList<Card> resetDeck = new ArrayList<>();
-        for (Card card : originalDeck) {
-            resetDeck.add(new Card(card));
-        }
-        return resetDeck;
-    }
-
 }

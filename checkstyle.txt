@@ -4,6 +4,6 @@ Starting audit...
 [ERROR] /home/horiqq/Documents/anul2/semestrul1/poo/oop-asignments/teme/tema/./src/game/GameCommands.java:11:33: Using the '.*' form of import should be avoided - game.CommandHelper.*. [AvoidStarImport]
 [ERROR] /home/horiqq/Documents/anul2/semestrul1/poo/oop-asignments/teme/tema/./src/game/GameCommands.java:111:60: Parameter turns should be final. [FinalParameters]
 [ERROR] /home/horiqq/Documents/anul2/semestrul1/poo/oop-asignments/teme/tema/./src/game/GameCommands.java:111:71: Parameter round should be final. [FinalParameters]
-[ERROR] /home/horiqq/Documents/anul2/semestrul1/poo/oop-asignments/teme/tema/./src/main/Main.java:77:5: Method length is 188 lines (max allowed is 150). [MethodLength]
+[ERROR] /home/horiqq/Documents/anul2/semestrul1/poo/oop-asignments/teme/tema/./src/main/Main.java:76:5: Method length is 166 lines (max allowed is 150). [MethodLength]
 Audit done.
 Checkstyle ends with 6 errors.

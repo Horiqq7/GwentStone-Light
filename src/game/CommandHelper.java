@@ -600,17 +600,12 @@ public abstract class CommandHelper {
      * @throws IllegalArgumentException Daca numele eroului este necunoscut.
      */
     public static Hero createHero(final CardInput heroInput) {
-        switch (heroInput.getName()) {
-            case "Lord Royce":
-                return new LordRoyce(heroInput);
-            case "Empress Thorina":
-                return new EmpressThorina(heroInput);
-            case "King Mudface":
-                return new KingMudface(heroInput);
-            case "General Kocioraw":
-                return new GeneralKocioraw(heroInput);
-            default:
-                return null;
-        }
+        return switch (heroInput.getName()) {
+            case "Lord Royce" -> new LordRoyce(heroInput);
+            case "Empress Thorina" -> new EmpressThorina(heroInput);
+            case "King Mudface" -> new KingMudface(heroInput);
+            case "General Kocioraw" -> new GeneralKocioraw(heroInput);
+            default -> null;
+        };
     }
 }

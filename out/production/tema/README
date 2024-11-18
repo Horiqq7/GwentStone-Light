@@ -1,0 +1,93 @@
+Rusu Horia
+321 CD
+
+    Pentru realizarea acestei teme am ales sa impart pe categorii obiectele importante din joc, astfel
+    incat proiectul sa fie organizat in mai multe pachete si clase, fiecare avand responsabilitati clare.
+
+
+    Pachetul actions:
+    Acest pachet contine clasa Actions, care gestioneaza actiunile efectuate de jucatori in timpul jocului.
+    1. Clasa Actions:
+    Contine variabile pentru stocarea informatiilor despre actiunile jucatorului (comanda, coordonatele
+    cartilor atacate, mana, etc.).
+    Constructorul acestei clase primeste un obiect de tipul ActionsInput, care contine datele necesare
+    pentru a initializa actiunea.
+    Metodele getCommand(), getHandIdx(), getCardAttacker(), getCardAttacked(), etc.,
+    sunt folosite pentru a accesa aceste date si pentru a fi folosite in logica jocului.
+
+
+    Pachetul cards:
+    Acest pachet contine clasele Card, Hero si Minion, precum si alte 2 pachete in care am implementat
+    abilitatile eroilor (heroes),
+    precum si abilitatile minionilor (minions).
+    1. Clasa Card:
+    Este baza pentru toate tipurile de carti si contine atribute comune precum mana, atacul, viata, descrierea
+    si culorile asociate cartii.
+    Aceasta include si metode pentru atacul cartilor, aplicarea abilitatilor speciale si verificarea daca o
+    carte a fost inghetata sau a atacat deja.
+    2. Clasa Hero:
+    Clasa Hero extinde Card si reprezinta eroii ce pot aparea in joc. Aceasta clasa este abstracta si contine
+    o metoda abstracta useAbility,
+    care este implementata de fiecare erou. Eroii au o viata fixa de 30 si pot folosi o abilitate care afecteaza
+    tabla de joc.
+    3. Clasa Minion:
+    Clasa Minion reprezinta minionii care au abilitati speciale ce pot fi folosite asupra altor carti. Minionii sunt
+    implementati prin clase care extind Minion si definesc cum sunt folosite abilitatile lor.
+    4. Pachetul minions:
+    Acest pachet contine cate o clasa pentru fiecare minion cu o abilitate speciala, care este si implementata.
+    5. Pachetul heroes:
+    Pachetul heroes contine cate o clasa pentru fiecare erou, clasa in care este implementat abilitatea speciala
+    a acestuia.
+
+
+    Pachetul game:
+    Pachetul game contine clase care sunt responsabile de gestionarea jocului, interactiunea dintre jucatori, carti
+    si tabla de joc. Aceste clase sunt esentiale pentru implementarea si functionare corecta a jocului. De asemenea,
+    pachetul include logica de joc, manipularea cartilor si gestionarea actiunilor jucatorilor.
+    1. Clasa Decks:
+    Clasa Decks gestioneaza pachetele de carti (deck-urile) ale jucatorilor. Ea primeste informatiile despre deck-uri,
+    le construieste si le stocheaza intr-o lista de liste de carti. Contine un constructor care primeste un obiect de
+    tip DecksInput pentru a initializa deck-urile. Metoda deckIndex(int index) returneaza deck-ul unui jucator,
+    identificat prin index-ul sau.
+    2. Clasa Game:
+    Clasa Game gestioneaza un joc, incluzand actiunile care pot fi efectuate in cadrul acestuia si starea de inceput a
+    jocului. Contine un constructor care primeste un obiect de tip GameInput pentru a initializa jocul si actiunile.
+    Contine o lista de actiuni (Actions), care sunt executate pe parcursul jocului. Metodele getStartGame() si
+    getActions() returneaza datele de inceput ale jocului si lista de actiuni.
+    3. Clasa GameBoard:
+    Clasa GameBoard reprezinta tabla de joc, unde sunt plasate cartile si unde au loc actiunile. Aceasta gestioneaza
+    randurile de pe tabla, numarul maxim de carti pe rand si starea jocului (daca acesta s-a incheiat sau nu).
+    Contine un constructor care initializeaza tabla cu 4 randuri.
+    Metodele isGameEnded() si endGame() verifica si seteaza starea jocului.
+    Metode pentru gestionarea cartilor de pe tabla: getCard(int x, int y), placeCard(Card card, int row),
+    resetStatusOfCardsOnRow(int row) si resetBoard().
+    Metoda getCardsOnTable() returneaza toate cartile de pe tabla, grupate pe randuri.
+    4. Clasa Player:
+    Clasa Player reprezinta un jucator in joc, gestionand deck-ul, mana, ero-ul si numarul de tancuri.
+    Contine metode pentru gestionarea pachetului de carti al jucatorului si pentru extragerea de carti: drawCard().
+    Atribute precum mana (mana disponibila pentru a juca carti) si numberOfTanks (numarul de tancuri al jucatorului).
+    Contine getter-e si setter-e pentru accesarea si modificarea atributelor.
+    5. Clasa StartGame:
+    Clasa StartGame contine informatiile necesare pentru a initializa jocul, inclusiv deck-urile jucatorilor, eroii
+    acestora si altele detalii legate de inceputul jocului.
+    Atributul playerOneDeckIdx si playerTwoDeckIdx reprezinta indicii deck-urilor pentru jucatori.
+    playerOneHero si playerTwoHero reprezinta eroii selectati de jucatori.
+    6. Clasa CommandHelper:
+    Am creat aceasta clasa pentru a veni in ajutorul clasei GameCommands, care implementeaza fiecare comanda posibila
+    a jocului. Am implementat aici metode care ajuta la construirea outputului pentru afisarea diferitelor cerinte:
+    carti, eroi, carti de pe tabla, pachete, dar si erori. In clasa aceasta se regasesc metode ce ajuta la intelegerea
+    si simplificare codului, cum ar fi: actiunile de atac a unei carti, plasarea unei carti pe masa, verificarea unei
+    carti daca este de tip Tank, determinarea si verificarea randului de pe tabla, etc..
+    7. Clasa GameCommands:
+    Poate cea mai importanta clasa, aici se regasesc implementarile fiecarei comenzi posibile din joc. Aceasta clasa
+    apeleaza metodele scrise in clasa CommandHelper, cu ajutorul careia am reusit sa simplific implementarea comenzilor
+    si sa fie mai usor de inteles.
+
+
+    Pachetul main:
+    1. Main:
+    In clasa Main, am initializat jocul, am configurat deck-urile si eroii pentru fiecare jucator, iar apoi am
+    amestecat cartile. Fiecare joc este procesat pas cu pas, folosind actiuni definite in input, care sunt gestionate
+    prin metode din clasa GameCommands. Aceste actiuni actualizeaza starea jocului (plasarea cartilor, atacuri,
+    abilitati, schimbarea turelor). Rezultatele sunt salvate intr-un fisier JSON, iar scorul final este
+    calculat si afisat.
